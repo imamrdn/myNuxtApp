@@ -1,117 +1,70 @@
 <template>
-  <section class="bg-gray-50 dark:bg-gray-900">
-    <div
-      class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
-    >
-      <div
-        class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700"
-      >
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1
-            class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
-          >
-            Create your account
-          </h1>
-          <form @submit.prevent="register" class="space-y-4 md:space-y-6">
-            <div>
-              <label
-                for="email"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Your email</label
-              >
-              <input
-                v-model="email"
-                type="email"
-                id="email"
-                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="name@company.com"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Password</label
-              >
-              <input
-                v-model="password"
-                type="password"
-                id="password"
-                placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="confirm_password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Confirm Password</label
-              >
-              <input
-                v-model="confirmPassword"
-                type="password"
-                id="confirm_password"
-                placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Sign up
-            </button>
-            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-              Already have an account?
-              <a
-                href="/login"
-                class="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >Log in</a
-              >
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div>
+    <h1>Register</h1>
+    <form @submit.prevent="handleRegister">
+      <input type="text" v-model="name" placeholder="Name" required />
+      <input type="email" v-model="email" placeholder="Email" required />
+      <input
+        type="password"
+        v-model="password"
+        placeholder="Password"
+        required
+      />
+      <input
+        type="password"
+        v-model="confirmPassword"
+        placeholder="Confirm Password"
+        required
+      />
+      <button type="submit">Register</button>
+    </form>
+    <p v-if="error">{{ error }}</p>
+  </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRouter, useNuxtApp } from "#app";
 
-const router = useRouter();
-const { $axios } = useNuxtApp();
-
+const name = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const error = ref("");
+const router = useRouter();
+const { $axios } = useNuxtApp();
 
-async function register() {
+const handleRegister = async () => {
   if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match");
+    error.value = "Passwords do not match.";
     return;
   }
 
   try {
     const response = await $axios.post("/register", {
+      name: name.value,
       email: email.value,
       password: password.value,
+      confirm_password: confirmPassword.value,
     });
-    console.log("Registration successful:", response.data);
-    router.push("/login");
-  } catch (error) {
-    console.error("Registration failed:", error);
-  }
-}
-</script>
 
-<style scoped>
-h2 {
-  font-size: 24px;
-  text-align: center;
-}
-</style>
+    if (response.data.data && response.data.data.token) {
+      localStorage.setItem("authToken", response.data.data.token);
+      console.log("Registrasi berhasil:", response);
+      router.push("/dashboard");
+    } else {
+      error.value = "Registration failed. Please try again.";
+    }
+  } catch (err) {
+    console.error("Error saat registrasi:", err);
+    error.value = "Registration failed. Please check your input.";
+  }
+};
+
+onMounted(() => {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    router.push("/dashboard");
+  }
+});
+</script>
