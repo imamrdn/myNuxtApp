@@ -23,7 +23,7 @@
               type="text"
               v-model="name"
               required
-              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
             />
           </div>
         </div>
@@ -40,7 +40,7 @@
               v-model="email"
               required
               autocomplete="email"
-              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
             />
           </div>
         </div>
@@ -57,7 +57,7 @@
               v-model="password"
               required
               autocomplete="new-password"
-              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@
               v-model="confirmPassword"
               required
               autocomplete="new-password"
-              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
             />
           </div>
         </div>
@@ -84,7 +84,7 @@
         <div>
           <button
             type="submit"
-            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 p-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+            class="flex w-full justify-center rounded-md bg-blue-600 px-3 p-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
           >
             Register
           </button>
@@ -93,9 +93,7 @@
 
       <p class="mt-10 text-center text-sm text-gray-500">
         Already have an account?
-        <a
-          href="/login"
-          class="font-semibold text-indigo-600 hover:text-indigo-500"
+        <a href="/login" class="font-semibold text-blue-600 hover:text-blue-500"
           >Sign in</a
         >
       </p>
@@ -106,6 +104,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useNuxtApp } from "#app";
+import { useFlashMessage } from "~/composables/useFlashMessage";
 
 const name = ref("");
 const email = ref("");
@@ -114,6 +113,7 @@ const confirmPassword = ref("");
 const error = ref("");
 const router = useRouter();
 const { $axios } = useNuxtApp();
+const { setFlashMessage } = useFlashMessage();
 
 const handleRegister = async () => {
   if (password.value !== confirmPassword.value) {
@@ -131,7 +131,7 @@ const handleRegister = async () => {
 
     if (response.data.data && response.data.data.token) {
       localStorage.setItem("authToken", response.data.data.token);
-      console.log("Registrasi berhasil:", response);
+      setFlashMessage("Registrasi berhasil!", "success");
       router.push("/dashboard");
     } else {
       error.value = "Registration failed. Please try again.";

@@ -1,16 +1,30 @@
 <!-- App.vue -->
 <template>
   <div>
-    <header>
-      <!-- <h1>{{ appName }}</h1> -->
-    </header>
-    <NuxtPage />
+    <!-- Flash Message -->
+    <div
+      v-if="flashMessage"
+      :class="`fixed top-5 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md text-white ${flashTypeClass}`"
+    >
+      {{ flashMessage }}
+    </div>
+
+    <!-- Page Layout and Content -->
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
 
 <script setup>
-const config = useRuntimeConfig();
-const appName = config.public.appName || "MyNuxtApp";
+import { computed } from "vue";
+import { useFlashMessage } from "~/composables/useFlashMessage";
+
+const { message: flashMessage, type: flashType } = useFlashMessage();
+
+const flashTypeClass = computed(() => {
+  return flashType.value === "success" ? "bg-green-500" : "bg-red-500";
+});
 </script>
 
 <style scoped>
