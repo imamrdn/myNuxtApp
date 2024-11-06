@@ -24,15 +24,18 @@
         <div class="flex justify-between items-center">
           <div class="flex gap-8">
             <NuxtLink to="/dashboard" class="text-md py-5">Home</NuxtLink>
-            <NuxtLink to="/dashboard/users" class="text-md py-5"
-              >Users</NuxtLink
-            >
-            <NuxtLink to="/dashboard/roles" class="text-md py-5"
-              >Roles</NuxtLink
-            >
-            <NuxtLink to="/dashboard/permissions" class="text-md py-5"
-              >Permissions</NuxtLink
-            >
+
+            <div v-if="isSuperAdmin" class="flex gap-8">
+              <NuxtLink to="/dashboard/users" class="text-md py-5"
+                >Users</NuxtLink
+              >
+              <NuxtLink to="/dashboard/roles" class="text-md py-5"
+                >Roles</NuxtLink
+              >
+              <NuxtLink to="/dashboard/permissions" class="text-md py-5"
+                >Permissions</NuxtLink
+              >
+            </div>
           </div>
         </div>
       </nav>
@@ -47,13 +50,30 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
+const isSuperAdmin = ref(false);
 const router = useRouter();
+
+onMounted(() => {
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const token = localStorage.getItem("authToken");
+
+  if (
+    !token ||
+    !userData ||
+    !userData.roles.some((role) => role.name === "super-admin")
+  ) {
+    router.push("/dashboard");
+  } else {
+    isSuperAdmin.value = true;
+  }
+});
 
 const handleLogout = () => {
   localStorage.removeItem("authToken");
-  localStorage.removeItem("userName");
+  localStorage.removeItem("userData");
   router.push("/login");
 };
 </script>
