@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="text-2xl font-semibold text-gray-900">
-      Welcome, {{ userName }}
+      Welcome, {{ userData.name }}
     </h2>
     <p class="mt-4 text-gray-600">
       This is your dashboard. Here you can manage your account and access other
@@ -14,14 +14,18 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-const userName = ref("");
+const userData = ref({});
 const router = useRouter();
 
 onMounted(() => {
   const token = localStorage.getItem("authToken");
-  userName.value = localStorage.getItem("userName") || "Guest";
   if (!token) {
     router.push("/login");
+  } else {
+    const storedUserData = localStorage.getItem("userData");
+    userData.value = storedUserData
+      ? JSON.parse(storedUserData)
+      : { name: "Guest" };
   }
 });
 

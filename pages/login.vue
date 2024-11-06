@@ -103,7 +103,6 @@ const handleLogin = async () => {
 
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(user));
-      localStorage.setItem("userName", user.name);
 
       setFlashMessage("Login berhasil!", "success");
       router.push("/dashboard");

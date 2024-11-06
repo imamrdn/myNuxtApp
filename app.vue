@@ -1,7 +1,6 @@
 <!-- App.vue -->
 <template>
   <div>
-    <!-- Flash Message -->
     <div
       v-if="flashMessage"
       :class="`fixed top-5 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md text-white ${flashTypeClass}`"
@@ -9,7 +8,6 @@
       {{ flashMessage }}
     </div>
 
-    <!-- Page Layout and Content -->
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

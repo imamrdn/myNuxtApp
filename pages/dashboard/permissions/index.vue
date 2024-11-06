@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Roles</h1>
+    <h1>Permission</h1>
   </div>
 </template>
 
